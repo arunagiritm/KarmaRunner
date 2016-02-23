@@ -1,7 +1,0 @@
-1. input.json - Should contain the array of spec files to be processed.
-2. main.js    - starting file which will expose method "ReadSpecJson" which should be executed. Will process all the files and will export the value as "jsuite.json"
-3. KarmaMain - File to start main.js
-4. suite.js   - Defines all dummy methods for jasmine tests
-5. execute+timestamp - outputfile for processing test created by main.js
-6. jsuite.json - Output json file that will have the results
-7. FilesData.txt - Defines this file summary

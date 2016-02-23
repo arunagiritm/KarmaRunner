@@ -16,21 +16,23 @@ function ReadSpecJson(filename){
         return;
        }
     //loop through the object
-	var specFiles =fdata.fileinfo;
+    var specFiles = fdata.fileinfo;
+    var outfile;
 	specFiles.forEach(function(currentValue,index,array){
         var data= ConcatFiles(array[index]);
-		var outfile = outputFile+new Date().getTime().toString()+".js";
+		outfile = outputFile+new Date().getTime().toString()+".js";
 		fs.writeFileSync(outfile, data );
         ExecuteFiles(array[index],outfile);
         // console.log(jsuites[0].suite);
     });
-	fs.writeFileSync(jSuiteFile,JSON.stringify(jsuites));
+	fs.writeFileSync(jSuiteFile, JSON.stringify(jsuites));
+	fs.unlinkSync(outfile);
 
 };
 
 
 function ConcatFiles(filename){
-    var funcdef=" \nfunction exdefine(a,b){\njid=a || 1;\njpid=b || 0;\n";
+    var funcdef = " \nfunction exdefine(a,b){\njid=a || 1;\njpid=b || 0;";
 	var f1=fs.readFileSync(inputFile,'utf8');
 	var f2 =fs.readFileSync(filename,'utf8');
     var cdata = f1 + funcdef+ f2 +"};";
@@ -41,8 +43,8 @@ function ExecuteFiles(sfile,outfile){
 	var exefile = {};
 	exefile =require(outfile);   
 	exefile.exdefine(id,pid);
-	id=exefile.jid+1;
-	pid=exefile.jpid+1;
+	id=exefile.jids.jid+2;
+	pid=exefile.jids.jid+1;
 	var jsuite={};
 	jsuite ={
 		file:sfile,

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Data;
 
-namespace Karmarunner
+namespace KarmaRunner
 {
     public class TreeViewSchema
     {
@@ -32,6 +32,11 @@ namespace Karmarunner
         }
 
         public string KeyMember
+        {
+            get;
+            set;
+        }
+        public string Checked
         {
             get;
             set;

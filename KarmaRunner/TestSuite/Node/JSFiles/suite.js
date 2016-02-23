@@ -1,14 +1,28 @@
 var jasmineSuite = [];
 var jasmineSpec = {};
-var jid ;
-var jpid;
+var jid=1 ;
+var jpid = 0;
+var jids = { jid: 0, jpid: 1 };
 var jpidarr = [];
+var jasmine = {};
 
 
-function define(functionarr,callback)
-{
-	callback();
+
+//window.onerror(function (e) { e.preventDefault(); });
+//process.on('uncaughtException', function (exception) {});
+function jasmineExtn() {
+    this.readJson = function () { };
 }
+
+jasmine.createSpy = function (a) { };
+
+
+function define(functionarr, callback)
+{
+    callback();
+ 
+}
+
 
 //dummy methods for jasmine
  function describe(functionName, callback) {
@@ -24,9 +38,11 @@ function define(functionarr,callback)
     jpidarr.push(jpid);
     //console.log("Describe : " + functionName + " Id : " + jid + " Parent Id : " + jpid);
     jpid = jid;
-   jid++;
+    jid++;
     callback();
     jpid = jpidarr.pop();
+    jids.jid = jid;
+    jids.jpid = jpid;
 }
 function xdescribe(functionName, callback) {
     var jsuite={
@@ -76,10 +92,9 @@ function expect(fn){};
 function inject(callback){};
 //function module(fn){};
 function exdefine(a,b){};
- module.exports ={
-        jid:jid,
-     jpid:jpid,
+module.exports = {
+        jids:jids,
 		jasmineSuite:jasmineSuite,
-		 exdefine:exdefine
+		exdefine:exdefine
 		 
 }
