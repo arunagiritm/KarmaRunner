@@ -71,7 +71,9 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -99,6 +101,9 @@
     </Content>
     <Content Include="TestSuite\Node\JSFiles\commonFaked.js" />
     <Content Include="TestSuite\Node\JSFiles\Jasmine-extn.js" />
+    <Content Include="TestSuite\Node\JSFiles\mock.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="TestSuite\Node\output\jsuite.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

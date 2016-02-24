@@ -182,8 +182,9 @@ namespace KarmaRunner
 
         private void ExecuteNodeProcess()
         {
-            txtResult.Text = "";
-            txtErrResult.Text = "";
+            btnExecute.Enabled = false;
+            btnClearResult_Click(btnClearResult, new EventArgs { });
+            //btnClearError_Click(btnClearError, new EventArgs { });
             Stoptimer();
             ProcessTimer = new Timer();
             ProcessTimer.Interval = 100;
@@ -191,6 +192,7 @@ namespace KarmaRunner
             ProcessTimer.Enabled = true;
             ProcessTimer.Start();
             ExecuteExternalProcess(createSpecJson);
+            
         }
 
         void t_Tick(object sender, EventArgs e)
@@ -200,17 +202,22 @@ namespace KarmaRunner
                 if (txtResult.Text.Contains("sucessfully"))
                 {
                     Stoptimer();
-                    txtErrResult.Text = "process exited normally";
+                    sbError.AppendLine("process exited normally");
+                    SetText(sbError.ToString(), txtErrResult);
+                    //txtErrResult.Text = "process exited normally";
                     ProcessCompleted();
+                    btnExecute.Enabled = true;
                 }
                 else if (txtResult.Text.Contains("failed"))
                 {
                     Stoptimer();
+                    btnExecute.Enabled = true;
                 }
             }
             catch (Exception ex)
             {
                 Stoptimer();
+                btnExecute.Enabled = true;
                 MessageBox.Show(ex.Message);
 
             }
@@ -234,8 +241,8 @@ namespace KarmaRunner
         {
             try
             {
-                sbError.Length = 0;
-                sbResult.Length = 0;
+                //sbError.Length = 0;
+                //sbResult.Length = 0;
                 ProcessStartInfo psi = new ProcessStartInfo();
                 psi.UseShellExecute = false;
                 psi.WindowStyle = ProcessWindowStyle.Hidden;
@@ -321,9 +328,6 @@ namespace KarmaRunner
 
                 //Execute the batch file which will use the input json for processing  and create json file to build tree.
                 ExecuteNodeProcess();
-
-
-
             }
             catch (Exception ex)
             {
@@ -394,9 +398,12 @@ namespace KarmaRunner
                     dc.DefaultValue = js.file;
                     js.suite.Columns.Add(dc);
                     dt.Merge(js.suite);
-                    rootNode = Convert.ToInt32(js.suite.Rows[0]["ParentId"].ToString());
-                    KarmaRunnerHelper.CreateTreeView(treeView1, js.suite, rootNode);
-                    treeView1.CollapseAll();
+                    if (js.suite.Rows.Count > 0)
+                    {
+                        rootNode = Convert.ToInt32(js.suite.Rows[0]["ParentId"].ToString());
+                        KarmaRunnerHelper.CreateTreeView(treeView1, js.suite, rootNode);
+                        treeView1.CollapseAll();
+                    }
                 }
                 sbResult.AppendLine("Sucessfully created Tree view");
                 SetText(sbResult.ToString(), txtResult);
@@ -526,8 +533,12 @@ namespace KarmaRunner
                     selectedItem = lstFiles.SelectedItems[i].ToString();
                     SpecFiles.Remove(SpecFiles.Find(f => f.Contains(selectedItem)));
                     lstFiles.Items.Remove(lstFiles.SelectedItems[i]);
-
                 }
+                if (treeView1.Nodes.Count >0)
+                {
+                    btnCreateTree_Click(btnCreateTree, new EventArgs { });    
+                }
+                
             }
         }
 
@@ -710,7 +721,10 @@ namespace KarmaRunner
         {
             try
             {
+                
                 string htmlfullPath = string.Format(@"{0}\{1}", txtProjDir.Text, htmlReportFile);
+                sbResult.AppendLine(string.Format("{0} {1}", "Opening the report file ", htmlfullPath));
+                SetText(sbResult.ToString(), txtResult);
                 if (File.Exists(htmlfullPath))
                 {
                     ExecuteExternalProcess(browserFile, string.Format("{0}{1}{0}", dquotes, htmlfullPath));
@@ -732,6 +746,8 @@ namespace KarmaRunner
             try
             {
                 string lcovFullPath = string.Format(@"{0}\{1}", txtProjDir.Text, lcovReportPath);
+                sbResult.AppendLine(string.Format(@"{0} {1}\{2}", "Opening the report file ", lcovFullPath,"index.html"));
+                SetText(sbResult.ToString(), txtResult);
                 if (!Directory.Exists(lcovFullPath))
                 {
                     MessageBox.Show("Report is not available at this time");
@@ -891,8 +907,6 @@ namespace KarmaRunner
             }
         }
 
-        #endregion Private Methods
-
         private void karmaConfigToolStripMenuItem_Click(object sender, EventArgs e)
         {
             try
@@ -976,10 +990,10 @@ namespace KarmaRunner
 
         private void btnCancelConfig_Click(object sender, EventArgs e)
         {
-            DialogResult dres= MessageBox.Show("Are you sure, All your changes will be lost");
-            if (dres== DialogResult.Yes)
+            DialogResult dres = MessageBox.Show("Are you sure, All your changes will be lost");
+            if (dres == DialogResult.Yes)
             {
-                LoadConfig();    
+                LoadConfig();
             }
         }
 
@@ -1010,13 +1024,13 @@ namespace KarmaRunner
             //KarmaRunnerHelper.FindAllInRTB(rtbConfig, txtFind.Text, Color.Red);
             try
             {
-                if (txtFind.Text==string.Empty)
+                if (txtFind.Text == string.Empty)
                 {
                     return;
                 }
                 string word = txtFind.Text;
                 Int32 index;
-                if (searchWord != word )
+                if (searchWord != word)
                 {
                     searchWord = word;
                     searchIndex = 0;
@@ -1045,6 +1059,10 @@ namespace KarmaRunner
                 MessageBox.Show(ex.Message);
             }
         }
+
+        #endregion Private Methods
+
+        
 
     }
 }

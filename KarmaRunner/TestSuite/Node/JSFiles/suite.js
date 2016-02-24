@@ -4,22 +4,19 @@ var jid=1 ;
 var jpid = 0;
 var jids = { jid: 0, jpid: 1 };
 var jpidarr = [];
-var jasmine = {};
-
-
-
-//window.onerror(function (e) { e.preventDefault(); });
-//process.on('uncaughtException', function (exception) {});
-function jasmineExtn() {
-    this.readJson = function () { };
-}
-
-jasmine.createSpy = function (a) { };
+var sfile = "";
+require('../JSFiles/mock.js'); 
 
 
 function define(functionarr, callback)
 {
-    callback();
+    try {
+        callback();
+    } catch (e) {
+        console.error("The define " + functionarr + " of File :" + sfile + " is invoking a function which is causing error. Either create a mock for this or move this method invocation to 'beforeEach' block \n");
+        console.error(e);
+    }
+    
  
 }
 
@@ -39,7 +36,13 @@ function define(functionarr, callback)
     //console.log("Describe : " + functionName + " Id : " + jid + " Parent Id : " + jpid);
     jpid = jid;
     jid++;
-    callback();
+    try {
+         callback();
+     } catch (e) {
+         console.error("The describe " + fname + " of File :" + sfile+  " is invoking a function which is causing error. Either create a mock for this or move this method invocation to 'beforeEach' block \n");
+         console.error(e);
+     }
+    
     jpid = jpidarr.pop();
     jids.jid = jid;
     jids.jpid = jpid;
@@ -56,8 +59,14 @@ function xdescribe(functionName, callback) {
     jpidarr.push(jpid);
     //console.log("xDescribe : " + functionName + " Id : " + jid + " Parent Id : " + jpid);
     jpid = jid;
-   jid++;
-    callback();
+    jid++;
+     try {
+        callback();
+    } catch (e) {
+        console.error("The describe " + fname + " of File :" + sfile + " is invoking a function which is causing error. Either create a mock for this or move this method invocation to 'beforeEach' block \n");
+        console.error(e);
+    }
+    
     jpid = jpidarr.pop();
 }
 
@@ -90,7 +99,6 @@ function beforeAll(fn){};
 function afterAll(fn){};
 function expect(fn){};
 function inject(callback){};
-//function module(fn){};
 function exdefine(a,b){};
 module.exports = {
         jids:jids,

@@ -23,16 +23,17 @@ function ReadSpecJson(filename){
 		outfile = outputFile+new Date().getTime().toString()+".js";
 		fs.writeFileSync(outfile, data );
         ExecuteFiles(array[index],outfile);
-        // console.log(jsuites[0].suite);
+	    // console.log(jsuites[0].suite);
+        fs.unlinkSync(outfile);
     });
 	fs.writeFileSync(jSuiteFile, JSON.stringify(jsuites));
-	fs.unlinkSync(outfile);
+	
 
 };
 
 
 function ConcatFiles(filename){
-    var funcdef = " \nfunction exdefine(a,b){\njid=a || 1;\njpid=b || 0;";
+    var funcdef = " \nfunction exdefine(a,b,specfile){\njid=a || 1;\njpid=b || 0;\n  sfile=specfile || '';";
 	var f1=fs.readFileSync(inputFile,'utf8');
 	var f2 =fs.readFileSync(filename,'utf8');
     var cdata = f1 + funcdef+ f2 +"};";
@@ -42,7 +43,7 @@ function ConcatFiles(filename){
 function ExecuteFiles(sfile,outfile){
 	var exefile = {};
 	exefile =require(outfile);   
-	exefile.exdefine(id,pid);
+	exefile.exdefine(id,pid,sfile);
 	id=exefile.jids.jid+2;
 	pid=exefile.jids.jid+1;
 	var jsuite={};

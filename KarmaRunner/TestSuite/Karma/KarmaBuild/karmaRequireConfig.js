@@ -15,6 +15,7 @@ Logic to pull all the '.spec' files from the set of all files loaded by karma.
 It is very important to load the specs from the initial set, otherwise karma does not know
 the identity of the specs and throws 'no timestamp' error
 */
+
 var filesToLoad = ['bootstrap']; //'app' is needed for all the specs, hence adding it as first dependency
 for (var file in window.__karma__.files) {
     if (/spec\.js$/.test(file)) {
@@ -22,6 +23,8 @@ for (var file in window.__karma__.files) {
 
     }
 };
+
+
 
 //Use to point the root directory which is two levels above the current directory
 var vendorPathPrefix = "../vendor/";
@@ -187,6 +190,6 @@ require.config({
 	deps: filesToLoad,
 
 	// kickoff jasmine tests from karma, once require loading is complete
-  	callback: window.__karma__.start
+	callback:window.__karma__.start
 });
 
