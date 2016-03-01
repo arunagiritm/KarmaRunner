@@ -1,18 +1,39 @@
-﻿<html>
+﻿<!DOCTYPE html>
+<html>
 <head>
-    <title></title>
-    <script type="text/javascript">
-        function ShowMessage(message) {
-            alert(message);
-        }
-        function ShowWinFormsMessage() {
-            var msg = document.getElementById('txtMessage').value;
-            return window.external.ShowMessage(msg);
-        }
-    </script>
+  <meta charset="utf-8">
+  <title>Jasmine Spec Runner </title>
+
+    <link rel="shortcut icon" type="image/png" href="{vendor}/jasmine/jasmine_favicon.png">
+    <link rel="stylesheet" href="../vendor/jasmine.css">
+
+    <script src="{vendor}/jasmine/jasmine.js"></script>
+    <script src="{vendor}/jasmine/jasmine-html.js"></script>
+    <script src="{vendor}/jasmine/boot.js"></script>
+    <script src="{vendor}/jasmine/require.js" data-main="jasmineRequireConfig"></script> //Do not modify this line
+ 
+  
+  <!-- include source files here... -->
+  
+
+  <!-- include spec files here... -->
+  
+  <script type="text/javascript">
+      console.log('Initializing jasmineEnv');
+
+      var jasmineEnv = jasmine.getEnv();
+      jasmineEnv.updateInterval = 1000;
+
+      console.log('Executing jasmine test cases');
+      require(['allUnitSpecs.js'], function (specs) {
+          require(specs, function (spec) {
+              jasmineEnv.execute();
+          });
+      });
+  </script>
+
 </head>
+
 <body>
-    <input type="text" id="txtMessage" />
-    <input type="button" value="Show Message" onclick="ShowWinFormsMessage()" />
 </body>
 </html>

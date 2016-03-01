@@ -39,6 +39,7 @@
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Management" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
@@ -55,6 +56,7 @@
       <DependentUpon>frmKarmarunner.cs</DependentUpon>
     </Compile>
     <Compile Include="Helper\KarmaRunnerHelper.cs" />
+    <Compile Include="Helper\stringBuilder.cs" />
     <Compile Include="JsuiteSchema.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -84,16 +86,31 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
+    <Content Include="TestSuite\Jasmine\lib\require.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestSuite\Karma\KarmaBuild\allUnitSpecs.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestSuite\Karma\KarmaBuild\jasmineRequireConfig.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="TestSuite\Karma\KarmaBuild\karmaMainConfig.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="TestSuite\Karma\KarmaBuild\karmaRequireConfig.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="TestSuite\Karma\KarmaBuild\SpecRunner.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="TestSuite\Karma\Templates\karmaMainConfig.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="TestSuite\Karma\Templates\karmaRequireConfig.js">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="TestSuite\Jasmine\web-server.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="TestSuite\Node\Bat\CreateSpecJson.bat">
@@ -119,6 +136,9 @@
     <Content Include="TestSuite\Karma\KarmaBat.bat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="TestSuite\Jasmine\startserver.bat">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Images\karmarunner.ico" />
@@ -129,7 +149,9 @@
     <Content Include="TestSuite\Jasmine\lib\jasmine.js" />
     <Content Include="TestSuite\Jasmine\lib\jasmine_favicon.png" />
     <Content Include="TestSuite\Jasmine\lib\output.min.js" />
-    <Content Include="TestSuite\Jasmine\SpecRunner.html" />
+    <Content Include="TestSuite\Jasmine\SpecRunner.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="TestSuite\Node\Info\FilesData.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

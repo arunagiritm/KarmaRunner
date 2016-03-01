@@ -76,17 +76,20 @@
             this.chkLoadFolder = new System.Windows.Forms.CheckBox();
             this.addSpecToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.deselectAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.selectAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.deleteSpecToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.selectAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.deselectAllToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.label8 = new System.Windows.Forms.Label();
             this.pnlConfig = new System.Windows.Forms.Panel();
-            this.btnSaveConfig = new System.Windows.Forms.Button();
-            this.btnCancelConfig = new System.Windows.Forms.Button();
-            this.btnCloseConfig = new System.Windows.Forms.Button();
-            this.rtbConfig = new System.Windows.Forms.RichTextBox();
-            this.txtFind = new System.Windows.Forms.TextBox();
             this.btnFind = new System.Windows.Forms.Button();
+            this.txtFind = new System.Windows.Forms.TextBox();
+            this.btnCloseConfig = new System.Windows.Forms.Button();
+            this.btnCancelConfig = new System.Windows.Forms.Button();
+            this.btnSaveConfig = new System.Windows.Forms.Button();
+            this.rtbConfig = new System.Windows.Forms.RichTextBox();
+            this.cmbRunner = new System.Windows.Forms.ComboBox();
+            this.label9 = new System.Windows.Forms.Label();
+            this.errorProvider1 = new System.Windows.Forms.ErrorProvider(this.components);
             this.menuStrip1.SuspendLayout();
             this.pnlUnitTest.SuspendLayout();
             this.panel4.SuspendLayout();
@@ -94,6 +97,7 @@
             this.panel1.SuspendLayout();
             this.contextMenuStrip1.SuspendLayout();
             this.pnlConfig.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -118,7 +122,7 @@
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(152, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(92, 22);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -373,7 +377,7 @@
             this.panel4.Controls.Add(this.btnClearList);
             this.panel4.Controls.Add(this.btnLoad);
             this.panel4.Controls.Add(this.btnLoadFolder);
-            this.panel4.Location = new System.Drawing.Point(15, 483);
+            this.panel4.Location = new System.Drawing.Point(15, 517);
             this.panel4.Name = "panel4";
             this.panel4.Size = new System.Drawing.Size(175, 33);
             this.panel4.TabIndex = 31;
@@ -502,30 +506,19 @@
             // addSpecToolStripMenuItem
             // 
             this.addSpecToolStripMenuItem.Name = "addSpecToolStripMenuItem";
-            this.addSpecToolStripMenuItem.Size = new System.Drawing.Size(119, 22);
+            this.addSpecToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
             this.addSpecToolStripMenuItem.Text = "Add Spec";
             this.addSpecToolStripMenuItem.Click += new System.EventHandler(this.addSpecToolStripMenuItem_Click);
             // 
             // contextMenuStrip1
             // 
             this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.addSpecToolStripMenuItem,this.deleteSpecToolStripMenuItem,this.selectAllToolStripMenuItem,this.deselectAllToolStripMenuItem });
+            this.addSpecToolStripMenuItem,
+            this.deleteSpecToolStripMenuItem,
+            this.selectAllToolStripMenuItem,
+            this.deselectAllToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(120, 26);
-            // 
-            // deselectAllToolStripMenuItem
-            // 
-            this.deselectAllToolStripMenuItem.Name = "deselectAllToolStripMenuItem";
-            this.deselectAllToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
-            this.deselectAllToolStripMenuItem.Text = "Deselect All";
-            this.deselectAllToolStripMenuItem.Click += new System.EventHandler(this.deselectAllToolStripMenuItem_Click);
-            // 
-            // selectAllToolStripMenuItem
-            // 
-            this.selectAllToolStripMenuItem.Name = "selectAllToolStripMenuItem";
-            this.selectAllToolStripMenuItem.Size = new System.Drawing.Size(129, 22);
-            this.selectAllToolStripMenuItem.Text = "Select All";
-            this.selectAllToolStripMenuItem.Click += new System.EventHandler(this.selectAllToolStripMenuItem_Click);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(131, 92);
             // 
             // deleteSpecToolStripMenuItem
             // 
@@ -533,6 +526,20 @@
             this.deleteSpecToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
             this.deleteSpecToolStripMenuItem.Text = "Delete spec";
             this.deleteSpecToolStripMenuItem.Click += new System.EventHandler(this.deleteSpecToolStripMenuItem_Click);
+            // 
+            // selectAllToolStripMenuItem
+            // 
+            this.selectAllToolStripMenuItem.Name = "selectAllToolStripMenuItem";
+            this.selectAllToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
+            this.selectAllToolStripMenuItem.Text = "Select All";
+            this.selectAllToolStripMenuItem.Click += new System.EventHandler(this.selectAllToolStripMenuItem_Click);
+            // 
+            // deselectAllToolStripMenuItem
+            // 
+            this.deselectAllToolStripMenuItem.Name = "deselectAllToolStripMenuItem";
+            this.deselectAllToolStripMenuItem.Size = new System.Drawing.Size(130, 22);
+            this.deselectAllToolStripMenuItem.Text = "Deselect All";
+            this.deselectAllToolStripMenuItem.Click += new System.EventHandler(this.deselectAllToolStripMenuItem_Click);
             // 
             // label8
             // 
@@ -557,25 +564,22 @@
             this.pnlConfig.TabIndex = 34;
             this.pnlConfig.Visible = false;
             // 
-            // btnSaveConfig
+            // btnFind
             // 
-            this.btnSaveConfig.Location = new System.Drawing.Point(832, 445);
-            this.btnSaveConfig.Name = "btnSaveConfig";
-            this.btnSaveConfig.Size = new System.Drawing.Size(75, 23);
-            this.btnSaveConfig.TabIndex = 1;
-            this.btnSaveConfig.Text = "&Save";
-            this.btnSaveConfig.UseVisualStyleBackColor = true;
-            this.btnSaveConfig.Click += new System.EventHandler(this.btnSaveConfig_Click);
+            this.btnFind.Location = new System.Drawing.Point(333, 445);
+            this.btnFind.Name = "btnFind";
+            this.btnFind.Size = new System.Drawing.Size(75, 23);
+            this.btnFind.TabIndex = 5;
+            this.btnFind.Text = "&Find";
+            this.btnFind.UseVisualStyleBackColor = true;
+            this.btnFind.Click += new System.EventHandler(this.btnFind_Click);
             // 
-            // btnCancelConfig
+            // txtFind
             // 
-            this.btnCancelConfig.Location = new System.Drawing.Point(915, 445);
-            this.btnCancelConfig.Name = "btnCancelConfig";
-            this.btnCancelConfig.Size = new System.Drawing.Size(75, 23);
-            this.btnCancelConfig.TabIndex = 2;
-            this.btnCancelConfig.Text = "&Cancel";
-            this.btnCancelConfig.UseVisualStyleBackColor = true;
-            this.btnCancelConfig.Click += new System.EventHandler(this.btnCancelConfig_Click);
+            this.txtFind.Location = new System.Drawing.Point(116, 445);
+            this.txtFind.Name = "txtFind";
+            this.txtFind.Size = new System.Drawing.Size(200, 20);
+            this.txtFind.TabIndex = 4;
             // 
             // btnCloseConfig
             // 
@@ -587,6 +591,26 @@
             this.btnCloseConfig.UseVisualStyleBackColor = true;
             this.btnCloseConfig.Click += new System.EventHandler(this.btnCloseConfig_Click);
             // 
+            // btnCancelConfig
+            // 
+            this.btnCancelConfig.Location = new System.Drawing.Point(915, 445);
+            this.btnCancelConfig.Name = "btnCancelConfig";
+            this.btnCancelConfig.Size = new System.Drawing.Size(75, 23);
+            this.btnCancelConfig.TabIndex = 2;
+            this.btnCancelConfig.Text = "&Cancel";
+            this.btnCancelConfig.UseVisualStyleBackColor = true;
+            this.btnCancelConfig.Click += new System.EventHandler(this.btnCancelConfig_Click);
+            // 
+            // btnSaveConfig
+            // 
+            this.btnSaveConfig.Location = new System.Drawing.Point(832, 445);
+            this.btnSaveConfig.Name = "btnSaveConfig";
+            this.btnSaveConfig.Size = new System.Drawing.Size(75, 23);
+            this.btnSaveConfig.TabIndex = 1;
+            this.btnSaveConfig.Text = "&Save";
+            this.btnSaveConfig.UseVisualStyleBackColor = true;
+            this.btnSaveConfig.Click += new System.EventHandler(this.btnSaveConfig_Click);
+            // 
             // rtbConfig
             // 
             this.rtbConfig.Location = new System.Drawing.Point(12, 27);
@@ -595,29 +619,36 @@
             this.rtbConfig.TabIndex = 0;
             this.rtbConfig.Text = "";
             // 
-            // txtFind
+            // cmbRunner
             // 
-            this.txtFind.Location = new System.Drawing.Point(116, 445);
-            this.txtFind.Name = "txtFind";
-            this.txtFind.Size = new System.Drawing.Size(200, 20);
-            this.txtFind.TabIndex = 4;
+            this.cmbRunner.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbRunner.FormattingEnabled = true;
+            this.cmbRunner.Items.AddRange(new object[] {
+            "Karma",
+            "Jasmine"});
+            this.cmbRunner.Location = new System.Drawing.Point(85, 483);
+            this.cmbRunner.Name = "cmbRunner";
+            this.cmbRunner.Size = new System.Drawing.Size(102, 21);
+            this.cmbRunner.TabIndex = 7;
             // 
-            // btnFind
+            // label9
             // 
-            this.btnFind.Location = new System.Drawing.Point(333, 445);
-            this.btnFind.Name = "btnFind";
-            this.btnFind.Size = new System.Drawing.Size(75, 23);
-            this.btnFind.TabIndex = 5;
-            this.btnFind.Text = "&Find";
-            this.btnFind.UseVisualStyleBackColor = true;
-            this.btnFind.Click += new System.EventHandler(this.btnFind_Click);
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(7, 487);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(75, 13);
+            this.label9.TabIndex = 27;
+            this.label9.Text = "Select Runner";
+            // 
+            // errorProvider1
+            // 
+            this.errorProvider1.ContainerControl = this;
             // 
             // frmKarmarunner
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(1177, 551);
-            this.Controls.Add(this.pnlConfig);
             this.Controls.Add(this.menuStrip1);
             this.Controls.Add(this.chkLoadFolder);
             this.Controls.Add(this.pnlUnitTest);
@@ -645,6 +676,9 @@
             this.Controls.Add(this.label1);
             this.Controls.Add(this.txtSourceDir);
             this.Controls.Add(this.txtResult);
+            this.Controls.Add(this.cmbRunner);
+            this.Controls.Add(this.label9);
+            this.Controls.Add(this.pnlConfig);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
             this.MaximizeBox = false;
@@ -660,6 +694,7 @@
             this.contextMenuStrip1.ResumeLayout(false);
             this.pnlConfig.ResumeLayout(false);
             this.pnlConfig.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -724,6 +759,9 @@
         private System.Windows.Forms.RichTextBox rtbConfig;
         private System.Windows.Forms.Button btnFind;
         private System.Windows.Forms.TextBox txtFind;
+        private System.Windows.Forms.ComboBox cmbRunner;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.ErrorProvider errorProvider1;
     }
 }
 

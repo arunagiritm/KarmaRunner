@@ -8,6 +8,8 @@ using System.Data;
 using System.Collections.Generic;
 using Newtonsoft.Json;
 using System.Drawing;
+using System.Management;
+using System.Text;
 
 
 namespace KarmaRunner.Helper
@@ -296,6 +298,53 @@ namespace KarmaRunner.Helper
             myRtb.SelectionStart = s_start;
             myRtb.SelectionLength = 0;
             myRtb.SelectionColor = Color.Black;
+        }
+        public static bool IsProcessRunning(string processName, string args="")
+        {
+            bool isRunning = false;
+            string wmiQuery = string.Format("select CommandLine from Win32_Process where Name='{0}'", "Node.Exe");
+            ManagementObjectSearcher searcher = new ManagementObjectSearcher(wmiQuery);
+            ManagementObjectCollection retObjectCollection = searcher.Get();
+            foreach (ManagementObject retObject in retObjectCollection)
+            {
+                //Console.WriteLine("[{0}]", retObject["CommandLine"]);
+                if (retObject["CommandLine"].ToString().Contains("web-server.js"))
+                {
+                    
+                    isRunning= true;
+                    break;
+                }
+            }
+
+            return isRunning;
+        }
+        public static Int32 DirDepth(string srcfile,string destfile)
+        {
+            Int32 depth = 0;
+            //if (File.GetAttributes(srcfile) != FileAttributes.Directory)
+            //{
+            //    srcfile = Path.GetDirectoryName(srcfile);    
+            //}
+
+            //if (File.GetAttributes(destfile) != FileAttributes.Directory)
+            //{
+            //    srcfile = Path.GetDirectoryName(destfile);
+            //}
+
+            destfile = destfile.Replace(srcfile,"");
+            depth = destfile.Split(new char[] { '\\' }, StringSplitOptions.RemoveEmptyEntries).Length;
+            return depth;
+        }
+
+        public static string Replicate(this string s,string replicatedString,Int32 noOfTimes)
+        {
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < noOfTimes; i++)
+            {
+                sb.Append(replicatedString);
+            }
+            s = s + sb.ToString();
+            return s;
         }
         
     }

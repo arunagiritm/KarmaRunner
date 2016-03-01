@@ -26,13 +26,14 @@ for (var file in window.__karma__.files) {
 
 
 
-//Use to point the root directory which is two levels above the current directory
-var vendorPathPrefix = "../vendor/";
-
+//Use to point the root directory which is one levels above the current directory
+//var vendorPathPrefix = "../vendor/";
+//baseUrl: '/base/src/common/'
+var vendorPathPrefix = "{vendorPlaceholder}/";
 require.config({
 	/*Karma serves files under /base. So, on the server requests to files will
 	 be served up under http://localhost:9876/base/*.  */
-	baseUrl: '/base/src/common/',
+    baseUrl: '{baseUrlPlaceholder}/',
 	waitSeconds:0,
 	// define library shortcuts
 	paths: {

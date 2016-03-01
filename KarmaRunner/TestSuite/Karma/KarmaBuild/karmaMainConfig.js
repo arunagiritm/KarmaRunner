@@ -9,14 +9,15 @@
 * @version 1.0
 * @author 
 */
-
+//basePath: '../',
+var vendorPathPrefix = '{vendorPlaceholder}/';
 module.exports = function(config) {
   config.set({
 
     // base path that will be used to resolve all patterns (eg. files, exclude)
     // refer two folders above because this config is under /test/unit
 	//this file will be available under KarmaBuild which is one level deeper to base directory
-    basePath: '../',
+      basePath: '{basePathPlaceholder}',
 
 
     // Karma plugins - adapters for Jasmine testing framework & RequireJS framework
@@ -73,17 +74,16 @@ module.exports = function(config) {
 			{pattern: 'src/**/*.js',included: false}, 
 			{pattern: 'src/**/*.html',included: true},
         //Test Spec files. 
-			{0} //Do not modify this line
+			{specsPlaceholder} //Do not modify this line
         //configuration files
-			{pattern: 'build/unit/karmaRequireConfig.js',included: true}
+            //{pattern: 'build/unit/karmaRequireConfig.js',included: true}
+             {pattern: '{karmaRequireConfigPlaceholder}',included: true}
         ],
 
     // list of files to exclude
     // exclude all requirejs config files - to avoid duplicate reference
     exclude: [
-       'src/js/mainConfig.js',
-       'KarmaBuild/build/karmaMainConfig.js',
-       'KarmaBuild/build/jasmineRequireConfig.js'
+                {excludePlaceholder}
     ],
 
    //Karma plugins to report results in junit xml format and HTML format.
@@ -92,11 +92,11 @@ module.exports = function(config) {
     //Junit XML format
     junitReporter: {
     //   suite: 'unit',
-      outputFile: '{1}' //Do not modify this line
+        outputFile: '{junitReporterPlaceholder}' //Do not modify this line
     },
     // HTML format
     htmlReporter: {
-        outputFile: '{2}' //Do not modify this line
+        outputFile: '{htmlReporterPlaceholder}' //Do not modify this line
     },
 
     // Karma web server(using nodejs socket IO ) default port
@@ -142,8 +142,8 @@ module.exports = function(config) {
 
     coverageReporter: {
       reporters: [
-        { type : 'cobertura', dir:'{3}'}, //Do not modify this line
-        { type : 'lcov', dir:'{4}'}      //Do not modify this line
+        { type : 'cobertura', dir:'{coberturaPlaceholder}'}, //Do not modify this line
+        { type : 'lcov', dir:'{lcovPlaceholder}'}      //Do not modify this line
       ]
 
     },
