@@ -20,7 +20,7 @@ namespace KarmaRunner.Helper
         {
             return ExecuteProcess(filename, arguments, false);
         }
-
+        
         public static int ExecuteProcessWithHandle(string filename, string arguments, EventHandler pe)
         {
             try
@@ -301,19 +301,52 @@ namespace KarmaRunner.Helper
         }
         public static bool IsProcessRunning(string processName, string args="")
         {
+           return IsProcessRunning(processName, args,false);
+        }
+        public static bool IsProcessRunning(string processName, string args="",bool kill=false)
+        {
             bool isRunning = false;
-            string wmiQuery = string.Format("select CommandLine from Win32_Process where Name='{0}'", "Node.Exe");
-            ManagementObjectSearcher searcher = new ManagementObjectSearcher(wmiQuery);
-            ManagementObjectCollection retObjectCollection = searcher.Get();
-            foreach (ManagementObject retObject in retObjectCollection)
+            try
             {
-                //Console.WriteLine("[{0}]", retObject["CommandLine"]);
-                if (retObject["CommandLine"].ToString().Contains("web-server.js"))
+              
+                string wmiQuery = string.Format("select CommandLine,processId from Win32_Process where Name='{0}'", "Node.Exe");
+                ManagementObjectSearcher searcher = new ManagementObjectSearcher(wmiQuery);
+                ManagementObjectCollection retObjectCollection = searcher.Get();
+                foreach (ManagementObject retObject in retObjectCollection)
                 {
-                    
-                    isRunning= true;
-                    break;
+
+
+
+                    //Console.WriteLine("[{0}]", retObject["CommandLine"]);
+                    if (retObject["CommandLine"].ToString().Contains(args))
+                    {
+                        if (!kill)
+                        {
+                            isRunning = true;
+                        }
+                        else
+                        {
+                            Process p = Process.GetProcessById(Convert.ToInt32(retObject["processId"].ToString()));
+                            if (p != null)
+                            {
+                                p.Kill();
+                            }
+                            else
+                            {
+                                isRunning = true;
+                            }
+
+                        }
+
+                        break;
+                    }
                 }
+            }
+            catch (Exception)
+            {
+                isRunning = false;
+
+                
             }
 
             return isRunning;

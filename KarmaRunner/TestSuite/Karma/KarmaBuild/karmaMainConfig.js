@@ -73,6 +73,7 @@ module.exports = function(config) {
 		//Source javascript and html files	
 			{pattern: 'src/**/*.js',included: false}, 
 			{pattern: 'src/**/*.html',included: true},
+            {pattern: 'test/**/*.json',included: false,served:true},
         //Test Spec files. 
 			{specsPlaceholder} //Do not modify this line
         //configuration files
@@ -120,7 +121,7 @@ module.exports = function(config) {
    
 
     preprocessors: {
-      'src/**/*.js': ['coverage'],
+        {preprocessors}
       'src/**/*.html': ['ng-html2js']
     },
     ngHtml2JsPreprocessor: {

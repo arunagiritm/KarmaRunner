@@ -8,6 +8,6 @@ define(['app', 'angular'], function(app, angular) {
     
 	//define specs
     var specs = []
-   {specfiles} // Do not modify this line      
+    {specfiles} // Do not modify this line      
 	return specs;
 });

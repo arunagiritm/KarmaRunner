@@ -184,6 +184,6 @@ require.config({
 	// DO NOT load the bootstrap.js - angular mock has issues with ui-router
 	// Load the app instead
 	//deps: [
-	//	'./app'
+	//	'./bootstrap'
 	//]
 });

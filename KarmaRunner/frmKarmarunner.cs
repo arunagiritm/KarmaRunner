@@ -55,6 +55,8 @@ namespace KarmaRunner
         public string jasmineRequireconfig { get; set; }
         public string jasminespecconfig { get; set; }
         public string specrunner { get; set; }
+        public string JasminePORT { get; set; }
+        public string JasmineIP { get; set; }
         public string baseUrl { get; set; }
         public ConfigType ConfigFile { get; set; }
         public string searchWord { get; set; }
@@ -70,8 +72,9 @@ namespace KarmaRunner
         #region Fields
         string dquotes = "\"";
         Process oProcess;
-
         Timer ProcessTimer;
+        bool delayedOutput = false;
+        string karmaargs;
         #endregion Fields
 
         #region public methods
@@ -80,15 +83,15 @@ namespace KarmaRunner
         {
             InitializeComponent();
             ReadAppSettings();
-
+            dt = new DataTable();
             SpecFiles = new List<string>();
             dt = new DataTable();
             sbError = new StringBuilder();
             sbResult = new StringBuilder();
 
             cmbRunner.SelectedIndex = 0;
-            txtProjDir.Text = @"D:\Arun\HTML5UI\HTML5UI\ProviderHome";
-            //txtProjDir.Text = basePath;
+            //txtProjDir.Text = @"D:\Arun\HTML5UI\HTML5UI\ProviderHome";
+            txtProjDir.Text = basePath;
             txtSourceDir.Text = sourcePath;
             txtTestdir.Text = testPath;
             txtLibDir.Text = libPath;
@@ -125,13 +128,15 @@ namespace KarmaRunner
             cobReportPath = ConfigurationManager.AppSettings["cobReportPath"];
             lcovReportPath = ConfigurationManager.AppSettings["lcovReportPath"];
             browserFile = ConfigurationManager.AppSettings["browserFile"];
-            serverBat = string.Format(@"{0}\{1}", jasmineBase, ConfigurationManager.AppSettings["serverBat"]);
-            serverFile = string.Format(@"{0}\{1}", jasmineBase, ConfigurationManager.AppSettings["serverFile"]);
             jasmineBase = string.Format("{0}{1}", basedir, ConfigurationManager.AppSettings["jasmineBase"]);
             jasmineRequireconfig = string.Format(@"{0}\{1}", buildInput, ConfigurationManager.AppSettings["jasmineRequireconfig"]);
             jasminespecconfig = string.Format(@"{0}\{1}", buildInput, ConfigurationManager.AppSettings["jasminespecconfig"]);
+            serverBat = string.Format(@"{0}\{1}", jasmineBase, ConfigurationManager.AppSettings["serverBat"]);
+            serverFile = string.Format(@"{0}\{1}", jasmineBase, ConfigurationManager.AppSettings["serverFile"]);
             specrunner = string.Format(@"{0}\{1}", buildInput, ConfigurationManager.AppSettings["specrunner"]);
             baseUrl = string.Format(@"{0}\{1}", basePath, ConfigurationManager.AppSettings["baseUrl"]);
+            JasminePORT=ConfigurationManager.AppSettings["JasminePORT"];
+            JasmineIP = ConfigurationManager.AppSettings["JasmineIP"];
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -202,10 +207,10 @@ namespace KarmaRunner
         {
             btnExecute.Enabled = false;
             btnClearResult_Click(btnClearResult, new EventArgs { });
-            //btnClearError_Click(btnClearError, new EventArgs { });
             Stoptimer();
+            delayedOutput = false;
             ProcessTimer = new Timer();
-            ProcessTimer.Interval = 100;
+            ProcessTimer.Interval = 500;
             ProcessTimer.Tick += t_Tick;
             ProcessTimer.Enabled = true;
             ProcessTimer.Start();
@@ -213,16 +218,49 @@ namespace KarmaRunner
             
         }
 
+        private void StartTimer(Int32 updateInterval,EventHandler evt)
+        {
+            Stoptimer();
+            delayedOutput = true;
+            ProcessTimer = new Timer();
+            ProcessTimer.Interval = updateInterval;
+            ProcessTimer.Tick += evt;
+            ProcessTimer.Enabled = true;
+            ProcessTimer.Start();
+        }
+
+        void ProcessTimer_Tick(object sender, EventArgs e)
+        {
+            try
+            {
+               
+                if (!KarmaRunnerHelper.IsProcessRunning("Node.exe",Path.GetFileName(karmaargs)))
+                {
+                    Stoptimer();
+                }
+                else
+                {
+                    LogInfo(""); //dummy polling to update the result after specified time
+                }
+            }
+            catch (Exception ex)
+            {
+                Stoptimer();
+                btnExecute.Enabled = true;
+                MessageBox.Show(ex.Message);
+
+            }
+        }
+
         void t_Tick(object sender, EventArgs e)
         {
             try
             {
-                if (txtResult.Text.Contains("sucessfully"))
+                
+                 if (txtResult.Text.Contains("sucessfully"))
                 {
                     Stoptimer();
                     LogError("process exited normally");
-                    
-                    //txtErrResult.Text = "process exited normally";
                     ProcessCompleted();
                     btnExecute.Enabled = true;
                 }
@@ -252,6 +290,8 @@ namespace KarmaRunner
                 ProcessTimer = null;
 
             }
+            delayedOutput = false; //make this false. This is need only for long running process
+            LogInfo("");
 
         }
 
@@ -295,7 +335,16 @@ namespace KarmaRunner
 
         void oProcess_OutputDataReceived(object sender, DataReceivedEventArgs e)
         {
-            LogInfo(e.Data);
+            if (delayedOutput)
+            {
+                sbResult.AppendLine(e.Data);
+                
+            }
+            else
+            {
+                LogInfo(e.Data);
+            }
+            
             
         }
 
@@ -311,7 +360,7 @@ namespace KarmaRunner
             }
             else
             {
-                tb.Text = "";
+                //tb.Text = "";
                 tb.Text = text;
                 tb.Select(txtResult.TextLength, 0);
                 tb.Focus();
@@ -363,8 +412,12 @@ namespace KarmaRunner
         {
             
             string filePattern = @"{0}pattern: '{2}',included: false{1},";
+            string preprospattern = "'{0}/**/*.js': ['coverage'],";
+            string testbase =@"test\unit\";
             string fileContent, sfile, outfile, outDir, reqInfile, reqOutfile, fileExclusion,bldout;
             StringBuilder sb = new StringBuilder();
+            StringBuilder psb = new StringBuilder();
+            HashSet<string> preHash = new HashSet<string>();
             fileContent = File.ReadAllText(karmaconfig);
             LogInfo("started updating karma configuration file");
             //LogInfo("Updating " + karmaconfig +" file ...");
@@ -373,6 +426,16 @@ namespace KarmaRunner
                 sfile = spec.Replace(txtProjDir.Text + @"\", "").Replace(@"\", "/");
                 sfile = string.Format(filePattern, "{", "}", sfile);
                 sb.AppendLine(sfile);
+                sfile = spec.Replace(txtProjDir.Text + @"\", "").Replace(testbase, "").Replace(@"\", "/");
+                sfile = sfile.Split(new char[]{'/'} )[0];
+                sfile = string.Format(preprospattern, "src/"+sfile);
+                preHash.Add(sfile); // Will help to add only unique items
+               
+            }
+
+            foreach (string item in preHash)
+            {
+                psb.AppendLine(item);
             }
 
             outfile = string.Format("{0}{1}", txtProjDir.Text, karmaconfig.Replace(buildInput, buildOutput));
@@ -382,6 +445,7 @@ namespace KarmaRunner
                 Directory.CreateDirectory(outDir);
             }
             fileContent = fileContent.Replace("{specsPlaceholder}", sb.ToString());
+            fileContent = fileContent.Replace("{preprocessors}", psb.ToString());
             
             //strAppend=createPrefix(txtProjDir.Text, baseUrl);
             bldout = buildOutput.Substring(1).Replace(@"\", @"/");
@@ -472,46 +536,48 @@ namespace KarmaRunner
             DataRow[] drows;
             SpecDetails sdetails = new SpecDetails();
             LogInfo("Started updating Spec files");
-            
-            foreach (string spec in SpecFiles)
+            if (dt.Rows.Count > 0)
             {
-                fileContent = File.ReadAllLines(spec);
-                //Enable all specs by modifying all the describe and it statement 
-                for (int r = 0; r < fileContent.Length; r++)
+                foreach (string spec in SpecFiles)
                 {
-                    fileContent[r] = Regex.Replace(fileContent[r], @"\bxdescribe\b", "describe");
-                    fileContent[r] = Regex.Replace(fileContent[r], @"\bxit\b", "it");
-                }
-
-                drows = dt.Select(string.Format(filterExp, spec));
-                foreach (DataRow drow in drows)
-                {
-                    sdetails.Node = drow["Node"].ToString();
-                    sdetails.Type = drow["Type"].ToString();
-
-                    rindex = Array.FindIndex(fileContent, fi => fi.Contains(sdetails.Node));
-                    if (rindex >= 0)
+                    fileContent = File.ReadAllLines(spec);
+                    //Enable all specs by modifying all the describe and it statement 
+                    for (int r = 0; r < fileContent.Length; r++)
                     {
-                        if (sdetails.Type.ToLower() == "suite")
+                        fileContent[r] = Regex.Replace(fileContent[r], @"\bxdescribe\b", "describe");
+                        fileContent[r] = Regex.Replace(fileContent[r], @"\bxit\b", "it");
+                    }
+
+                    drows = dt.Select(string.Format(filterExp, spec));
+                    foreach (DataRow drow in drows)
+                    {
+                        sdetails.Node = drow["Node"].ToString();
+                        sdetails.Type = drow["Type"].ToString();
+
+                        rindex = Array.FindIndex(fileContent, fi => fi.Contains(sdetails.Node));
+                        if (rindex >= 0)
                         {
-                            string innerfilter = "ParentId={0} and Active=true";
-                            DataRow[] drs = dt.Select(string.Format(innerfilter, drow["Id"]));
-                            if (drs.Count() <=0 )
+                            if (sdetails.Type.ToLower() == "suite")
                             {
-                                fileContent[rindex] = Regex.Replace(fileContent[rindex], @"\bdescribe\b", "xdescribe");
+                                string innerfilter = "ParentId={0} and Active=true";
+                                DataRow[] drs = dt.Select(string.Format(innerfilter, drow["Id"]));
+                                if (drs.Count() <= 0)
+                                {
+                                    fileContent[rindex] = Regex.Replace(fileContent[rindex], @"\bdescribe\b", "xdescribe");
+                                }
+
                             }
-                            
-                        }
-                        else if (sdetails.Type.ToLower() == "spec")
-                        {
-                            fileContent[rindex] = Regex.Replace(fileContent[rindex], @"\bit\b", "xit");
+                            else if (sdetails.Type.ToLower() == "spec")
+                            {
+                                fileContent[rindex] = Regex.Replace(fileContent[rindex], @"\bit\b", "xit");
+                            }
                         }
                     }
+                    //File.WriteAllText(spec, fileContent);
+                    File.WriteAllLines(spec, fileContent);
+
+
                 }
-                //File.WriteAllText(spec, fileContent);
-                File.WriteAllLines(spec, fileContent);
-
-
             }
             LogInfo("Sucessfully updated Spec files");
             
@@ -621,8 +687,16 @@ namespace KarmaRunner
         {
             try
             {
-                if (treeView1.Nodes.Count > 0  && validateControls())
+                //if (treeView1.Nodes.Count > 0  && validateControls())
+                if (validateControls() && lstFiles.Items.Count >0)
                 {
+                    if (treeView1.Nodes.Count <=0)
+                    {
+                       if( (MessageBox.Show("Do you want to continue without Tree view creation?","",MessageBoxButtons.YesNo) )== DialogResult.No)
+                       {
+                           return;
+                       }
+                    }
                     pnlUnitTest.Visible = false;
                     //sbError.Length = 0;
                     //sbResult.Length = 0;
@@ -657,8 +731,11 @@ namespace KarmaRunner
             string args =Path.GetFileName(serverFile);
             string serfile = string.Format(@"{0}\{1}",basePath,args);
             string serbat = string.Format(@"{0}\{1}",basePath,Path.GetFileName(serverBat));
+            
             Process[] ps;
             LogInfo("starting Jamines Execution");
+       
+            
             if (!File.Exists(serfile))
             {
                 File.Copy(serverFile, serfile);
@@ -668,32 +745,31 @@ namespace KarmaRunner
                
                 File.Copy(serverBat, serbat);
             }
+           
             else
             {
                 File.WriteAllText(serbat, File.ReadAllText(serverBat));
                 
             }
-
-            ps= Process.GetProcessesByName("node.exe");
-            foreach (Process p in ps)
+            if (!KarmaRunnerHelper.IsProcessRunning("Node.exe", args,true))
             {
-                p.Kill();
+                KarmaRunnerHelper.ExecuteProcess(serbat, args);    
             }
-            //ExecuteExternalProcess(serbat, args);
-            KarmaRunnerHelper.ExecuteProcess(serbat, args);
-
             while (true)
             {
                 if (KarmaRunnerHelper.IsProcessRunning("Node.exe", args))
                 {
                     LogInfo("Server is launched ...");
+                    LogInfo("Reload the browser, if jasmine is not getting executed.\n Kill previous node process if any is getting executed.");
                     break;
                 }
 	
             }
             string spr = buildOutput.Substring(1)+@"\"+ Path.GetFileName(specrunner);
-            ExecuteExternalProcess(browserFile, string.Format("{0}", "http://localhost:8050/" +spr).Replace(@"\", "/"));
+            ExecuteExternalProcess(browserFile, string.Format("http://{0}:{1}/{2}",JasmineIP,JasminePORT,spr).Replace(@"\", "/"));
         }
+
+        
 
         private void Updatejasmineconfig()
         {
@@ -703,6 +779,9 @@ namespace KarmaRunner
             string fileContent, sfile, outfile, outDir;
             StringBuilder sb = new StringBuilder();
             Int32 projDepth;
+            string cfaked, je, cfakedsource, jesource;
+            string jsonfile;
+       
 
             fileContent = File.ReadAllText(jasminespecconfig);
             LogInfo("started updating jasmine configuration file");
@@ -717,7 +796,7 @@ namespace KarmaRunner
                 sfile = string.Format(filePattern, sfile);
                 sb.AppendLine(sfile);
             }
-
+           
             outfile = string.Format("{0}{1}", txtProjDir.Text, jasminespecconfig.Replace(buildInput, buildOutput));
             outDir = Path.GetDirectoryName(outfile);
             if (!Directory.Exists(outDir))
@@ -757,6 +836,23 @@ namespace KarmaRunner
             LogInfo("updating jasmine require config  file : " + outfile);
             File.WriteAllText(outfile, fileContent);
 
+            cfaked = string.Format(@"{0}\{1}", outDir, "commonFaked.js");
+            je = string.Format(@"{0}\{1}", outDir, "jasmine-extn.js");
+            cfakedsource = string.Format(@"{0}\{1}", Path.GetDirectoryName(jasmineRequireconfig), "commonFaked.js");
+            jesource = string.Format(@"{0}\{1}", Path.GetDirectoryName(jasmineRequireconfig), "jasmine-extn.js");
+
+            if (!File.Exists(cfaked))
+            {
+
+                File.Copy(cfakedsource, cfaked);
+            }
+            if (!File.Exists(je))
+            {
+
+                File.Copy(jesource, je);
+            }
+
+
             LogInfo("Sucessfully updated all jasmine files.");
 
            
@@ -784,9 +880,13 @@ namespace KarmaRunner
                 string outfile = string.Format("{0}{1}", txtProjDir.Text, karmaconfig.Replace(buildInput, buildOutput));
                 string outdir = Path.GetDirectoryName(outfile);
                 string args = string.Format("{0} {1}", outdir, outfile);
+                karmaargs = args;
+                btnClearResult_Click(btnClearResult, new EventArgs());
                 LogInfo("starting Karma Execution");
-                
+               txtResult.Text= txtResult.Text.ToLower().Replace("sucess", "").Replace("failed", "");
+                StartTimer(5000, ProcessTimer_Tick);
                 ExecuteExternalProcess(karmabat, args);
+               // KarmaRunnerHelper.ExecuteProcess(karmabat, args,true,true);
             }
             catch (Exception)
             {
@@ -1275,9 +1375,8 @@ namespace KarmaRunner
 
         #endregion Private Methods
 
-        
+
 
         
-
     }
 }

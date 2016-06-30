@@ -6,10 +6,18 @@
 
     <link rel="shortcut icon" type="image/png" href="{vendor}/jasmine/jasmine_favicon.png">
     <link rel="stylesheet" href="{vendor}/jasmine/jasmine.css">
-
+    <!-- Hide the toastr notifications -->
+    <style>
+        div#toast-container {
+            display: none;
+        }
+    </style>
+    <script type="text/javascript">window.jasmineRunner = true;</script>
     <script src="{vendor}/jasmine/jasmine.js"></script>
     <script src="{vendor}/jasmine/jasmine-html.js"></script>
     <script src="{vendor}/jasmine/boot.js"></script>
+    <script src="CommonFaked.js"></script>
+    <script src="Jasmine-extn.js"></script>
     <script src="{vendor}/requirejs/require.js" data-main="jasmineRequireConfig"></script><!--Do not modify this line-->
 
 
